@@ -261,14 +261,16 @@ with tab2:
     # Cria instrução com base nos dados filtrados atuais
     indicadores = list(df_filtered['Indicador'].unique())
     paises = list(df_filtered['País'].unique())
-    dados = df_filtered
+    valores = list(df_filtered['Valor']
+    ano = list(df_filtered['Ano'])
     nomes = list(df['Indicador'])
 
     system_instruction = f"""
     Você é o Databot. Explique indicadores económicos e traduza nomes em inglês.
     Indicadores disponíveis: {indicadores}
     Países selecionados: {paises}
-    dados com valores: {dados}
+    dados com valores: {valores}
+    ano referente aos valores : {ano}
     indicadores de busca:{nomes}. Esses indicadores devem ser apresentados quando o utilizador precisar de dica de como,
     ecnontrar-los: Por exemplo: como encontro e inflação. Responde: Comece escrevendo na barra de seleção de indicadores: Inflation ... e selecione o seu indicador
     Explique dizendo que nos dados deve escrever com letra maiuscula a primeira letra e em inglês de acorco com cada caso. Noutros casos como PIB deve ser GDP..
@@ -370,4 +372,5 @@ with tab3:
         e fortaleçam a tomada de decisão baseada em evidências.  
         📧 **Contacto**: *gineliohermilio@gmail.com*
         """)
+
 
