@@ -285,7 +285,7 @@ with tab2:
     # Cria instrução com base nos dados filtrados atuais
     indicadores = list(df_filtered['Indicador'].unique())
     paises = list(df_filtered['País'].unique())
-    valores = list(df_filtered['Valor']
+    valores = list(df_filtered['Valor'])
     ano = list(df_filtered['Ano'])
     nomes = list(df['Indicador'])
 
@@ -396,6 +396,7 @@ with tab3:
         e fortaleçam a tomada de decisão baseada em evidências.  
         📧 **Contacto**: *gineliohermilio@gmail.com*
         """)
+
 
 
 
