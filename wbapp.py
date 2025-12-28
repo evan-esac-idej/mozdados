@@ -9,7 +9,11 @@ st.set_page_config(
     page_icon="🇲🇿",
     layout="wide"
 )
-
+a, e, i = st.columns(3)
+with e:
+    st.info("## **🇲o🇿dados🌍**")
+st.caption("ℹ Os dados utilizados neste projecto são fornecidos pelo **Banco Mundial** através da *world bank api*")
+tab1, tab2, tab3 = st.tabs(['🏦 Indicador', '🤖 DataBot', 'ℹ️ Sobre o Projecto'])
 
 
 # ------------------ Cache functions ------------------
@@ -27,73 +31,32 @@ def get_countries():
 
 # ------------------ Sidebar ------------------
 st.sidebar.subheader('Moçambique')
-
 st.sidebar.image(
     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Flag_of_Mozambique.svg/320px-Flag_of_Mozambique.svg.png",
     width=100)
 
-
-
-df = wb.data.DataFrame(
-    series=i_lis,
-    economy=c_lis,
-    time=range(start_year, end_year + 1)
-)
-lista = []
-df.columns = df.columns.str.replace("YR", "").astype(int)
-df.reset_index(inplace=True)
-
-if 'series' in df.columns:
-    df['series'] = df['series'].replace(i_lis, sel_ind)
-    df = df.rename(columns={'series': 'Indicador'})
-else:
-    df['Indicador'] = sel_ind * len(df)
-
-if 'economy' in df.columns:
-    df['economy'] = df['economy'].replace(c_lis, sel_country)
-    df = df.rename(columns={'economy': 'País'})
-else:
-    df['País'] = sel_country*len(df)
-
-
-# 1. Transformar colunas de anos em uma única coluna 'Ano' (Melt)
-df_long = df.melt(
-    id_vars=['País', 'Indicador'],
-    var_name='Ano',
-    value_name='Valor'
-)
-
-a, e, i = st.columns(3)
-with e:
-    st.info("## **🇲o🇿dados🌍**")
-st.caption("ℹ Os dados utilizados neste projecto são fornecidos pelo **Banco Mundial** através da *world bank api*")
-tab1, tab2, tab3 = st.tabs(['🏦 Indicador', '🤖 Análise IA', 'ℹ️ Sobre o Projecto'])
-# 2. Garantir que o Ano seja numérico para o eixo X
-df_long['Ano'] = pd.to_numeric(df_long['Ano'])
 with tab1:
-    st.header("Filtros")
-    with st.expander('Como encontrar as variáveis'):
-        st.write("""Por exemplo: Como encontro e inflação? 
+    with st.expander('Ajuda'):
+        st.write("""Por exemplo: Como encontro a inflação? 
         Comece escrevendo com letra maiúscula em inglês na barra de seleção de indicadores: **Inflation** ... e selecione o seu indicador.
         Noutros casos como **PIB** deve ser GDP...
-        Caso ainda enfrente dificuldade pergunte ao **Chat**""")
+        Caso ainda enfrente dificuldade o **DataBot** pode ajudar.""")
     topic = get_topics()
     country = get_countries()
     ind = get_indicators(5)
-    
+
     dic = {}
     for big in country:
         dic[big['value']] = big['id']
     sel_country = st.multiselect('Selecione o(s) País(es):',
                                          options=sorted(dic.keys()), default='Mozambique')
-    
-    
+
     if not sel_country:
         st.stop()
     c_lis = []
     for c in sel_country:
         c_lis.append(dic[c])
-    
+
     dice = {}
     for big in ind:
         dice[big['value']] = big['id']
@@ -104,14 +67,44 @@ with tab1:
     i_lis = []
     for c in sel_ind:
         i_lis.append(dice[c])
-    
-    years = list(range(1960, 2024))
+
+    years = list(range(1960, 2025))
     start_year, end_year = st.select_slider(
         "Selecione o intervalo de anos",
         options=years,
         value=(2000, 2020)
     )
 
+    df = wb.data.DataFrame(
+        series=i_lis,
+        economy=c_lis,
+        time=range(start_year, end_year + 1)
+    )
+    lista = []
+    df.columns = df.columns.str.replace("YR", "").astype(int)
+    df.reset_index(inplace=True)
+
+    if 'series' in df.columns:
+        df['series'] = df['series'].replace(i_lis, sel_ind)
+        df = df.rename(columns={'series': 'Indicador'})
+    else:
+        df['Indicador'] = sel_ind * len(df)
+
+    if 'economy' in df.columns:
+        df['economy'] = df['economy'].replace(c_lis, sel_country)
+        df = df.rename(columns={'economy': 'País'})
+    else:
+        df['País'] = sel_country * len(df)
+
+    # 1. Transformar colunas de anos em uma única coluna 'Ano' (Melt)
+    df_long = df.melt(
+        id_vars=['País', 'Indicador'],
+        var_name='Ano',
+        value_name='Valor'
+    )
+
+    # 2. Garantir que o Ano seja numérico para o eixo X
+    df_long['Ano'] = pd.to_numeric(df_long['Ano'])
     # Supondo que 'sel_ind' são os indicadores selecionados e 'sel_pais' o país escolhido
     # Se você tiver mais de um país selecionado, o KPI mostrará apenas o primeiro
     for k, countr in enumerate(sel_country):
@@ -261,9 +254,6 @@ with tab2:
         st.stop()
 
     # --- Instrução inicial (contexto) ---
-    indicadores = list(df_filtered['Indicador'].unique())
-    paises = list(df_filtered['País'].unique())
-
     # Cria instrução com base nos dados filtrados atuais
     indicadores = list(df_filtered['Indicador'].unique())
     paises = list(df_filtered['País'].unique())
@@ -271,16 +261,18 @@ with tab2:
     ano = list(df_filtered['Ano'])
     nomes = list(df['Indicador'])
 
+    # Cria instrução com base nos dados filtrados atuais
     system_instruction = f"""
-    Você é o Databot. Explique indicadores económicos e traduza nomes em inglês.
-    Indicadores disponíveis: {indicadores}
-    Países selecionados: {paises}
-    dados com valores: {valores}
-    ano referente aos valores : {ano}
-    indicadores de busca:{nomes}. Esses indicadores devem ser apresentados quando o utilizador precisar de dica de como,
-    ecnontrar-los: Por exemplo: como encontro e inflação. Responde: Comece escrevendo na barra de seleção de indicadores: Inflation ... e selecione o seu indicador
-    Explique dizendo que nos dados deve escrever com letra maiuscula a primeira letra e em inglês de acorco com cada caso. Noutros casos como PIB deve ser GDP..
-    """
+        Você é o Databot. Explique indicadores económicos, traduza nomes em inglês e utilize todos os recursos disponiveis na internet, livros,
+        modelos, jornais, etc para explicar e esclarecer o que lhe for pedido. Seja criativo quando não tiver informação.
+        Indicadores disponíveis: {indicadores}
+        Países selecionados: {paises}
+        dados com valores: {valores}
+        ano referente aos valores : {ano}
+        indicadores de busca:{nomes}. Esses indicadores devem ser apresentados quando o utilizador precisar de dica de como,
+        ecnontrar-los: Por exemplo: como encontro e inflação. Responde: Comece escrevendo na barra de seleção de indicadores: Inflation ... e selecione o seu indicador
+        Explique dizendo que nos dados deve escrever com letra maiuscula a primeira letra e em inglês de acorco com cada caso. Noutros casos como PIB deve ser GDP..
+        """
 
     MODEL_NAME = "gemini-2.5-flash"
 
@@ -322,10 +314,9 @@ with tab2:
                 st.markdown(message["content"])
 
     with col2:
-        st.success("📌 Dica: Pergunte sobre indicadores económicos ou tendências nos dados.")
+        st.success("📌 Dica: Pergunte sobre indicadores económicos tendências nos dados.")
         st.info("Exemplo: *Explique o indicador Agricultural land (sq. km)*")
-        st.error("Caso não leve em conta os dados, copie e cole os dados que deseja analisar. Assim que os tiver, "
-                 "posso prosseguir com a análise.")
+        st.error("Exemplo: *Qual é a variável que mede o custo de vida?*")
 
     # --- Função para enviar mensagem ---
     def send_message_to_gemini(prompt):
@@ -378,11 +369,3 @@ with tab3:
         e fortaleçam a tomada de decisão baseada em evidências.  
         📧 **Contacto**: *gineliohermilio@gmail.com*
         """)
-
-
-
-
-
-
-
-
