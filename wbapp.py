@@ -34,7 +34,7 @@ st.sidebar.subheader('Moçambique')
 a, b = st.columns(2)
 with a:
     st.subheader('Moçambique')
-st.sidebar.image(
+st.image(
     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Flag_of_Mozambique.svg/320px-Flag_of_Mozambique.svg.png",
     width=100)
 with b:
@@ -396,6 +396,7 @@ with tab3:
         e fortaleçam a tomada de decisão baseada em evidências.  
         📧 **Contacto**: *gineliohermilio@gmail.com*
         """)
+
 
 
 
