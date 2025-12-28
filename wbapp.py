@@ -9,11 +9,7 @@ st.set_page_config(
     page_icon="🇲🇿",
     layout="wide"
 )
-a, e, i = st.columns(3)
-with e:
-    st.info("## **🇲o🇿dados🌍**")
-st.caption("ℹ Os dados utilizados neste projecto são fornecidos pelo **Banco Mundial** através da *world bank api*")
-tab1, tab2, tab3 = st.tabs(['🏦 Indicador', '🤖 Análise IA', 'ℹ️ Sobre o Projecto'])
+
 
 
 # ------------------ Cache functions ------------------
@@ -31,14 +27,11 @@ def get_countries():
 
 # ------------------ Sidebar ------------------
 st.sidebar.subheader('Moçambique')
-a, b = st.columns(2)
-with a:
-    st.subheader('Moçambique')
+st.subheader('Moçambique')
 st.image(
     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Flag_of_Mozambique.svg/320px-Flag_of_Mozambique.svg.png",
     width=100)
-with b:
-    st.image(
+st.image(
     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Flag_of_Mozambique.svg/320px-Flag_of_Mozambique.svg.png",
     width=100)
 st.sidebar.header("Filtros")
@@ -127,6 +120,11 @@ df_long = df.melt(
     value_name='Valor'
 )
 
+a, e, i = st.columns(3)
+with e:
+    st.info("## **🇲o🇿dados🌍**")
+st.caption("ℹ Os dados utilizados neste projecto são fornecidos pelo **Banco Mundial** através da *world bank api*")
+tab1, tab2, tab3 = st.tabs(['🏦 Indicador', '🤖 Análise IA', 'ℹ️ Sobre o Projecto'])
 # 2. Garantir que o Ano seja numérico para o eixo X
 df_long['Ano'] = pd.to_numeric(df_long['Ano'])
 with tab1:
@@ -396,6 +394,7 @@ with tab3:
         e fortaleçam a tomada de decisão baseada em evidências.  
         📧 **Contacto**: *gineliohermilio@gmail.com*
         """)
+
 
 
 
