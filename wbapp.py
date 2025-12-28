@@ -31,11 +31,24 @@ def get_countries():
 
 # ------------------ Sidebar ------------------
 st.sidebar.subheader('Moçambique')
+a, b = st.columns(2)
+with a:
+    st.subheader('Moçambique')
 st.sidebar.image(
     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Flag_of_Mozambique.svg/320px-Flag_of_Mozambique.svg.png",
     width=100)
+with b:
+    st.image(
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Flag_of_Mozambique.svg/320px-Flag_of_Mozambique.svg.png",
+    width=100)
 st.sidebar.header("Filtros")
+st.header("Filtros")
 with st.sidebar.expander('Como encontrar as variáveis'):
+    st.write("""Por exemplo: Como encontro e inflação? 
+    Comece escrevendo com letra maiúscula em inglês na barra de seleção de indicadores: **Inflation** ... e selecione o seu indicador.
+    Noutros casos como **PIB** deve ser GDP...
+    Caso ainda enfrente dificuldade pergunte ao **Chat**""")
+with st.expander('Como encontrar as variáveis'):
     st.write("""Por exemplo: Como encontro e inflação? 
     Comece escrevendo com letra maiúscula em inglês na barra de seleção de indicadores: **Inflation** ... e selecione o seu indicador.
     Noutros casos como **PIB** deve ser GDP...
@@ -49,6 +62,9 @@ for big in country:
     dic[big['value']] = big['id']
 sel_country = st.sidebar.multiselect('Selecione o(s) País(es):',
                                      options=sorted(dic.keys()), default='Mozambique')
+sel_country = st.multiselect('Selecione o(s) País(es):',
+                                     options=sorted(dic.keys()), default='Mozambique')
+
 
 if not sel_country:
     st.stop()
@@ -60,6 +76,8 @@ dice = {}
 for big in ind:
     dice[big['value']] = big['id']
 sel_ind = st.sidebar.multiselect('Selecione o(s) Indicador(es):',
+                                 options=sorted(dice.keys()), default="Agricultural land (sq. km)")
+sel_ind = st.multiselect('Selecione o(s) Indicador(es):',
                                  options=sorted(dice.keys()), default="Agricultural land (sq. km)")
 if not sel_ind:
     st.stop()
@@ -73,6 +91,12 @@ start_year, end_year = st.sidebar.select_slider(
     options=years,
     value=(2000, 2020)
 )
+start_year, end_year = st.select_slider(
+    "Selecione o intervalo de anos",
+    options=years,
+    value=(2000, 2020)
+)
+
 
 df = wb.data.DataFrame(
     series=i_lis,
@@ -372,5 +396,6 @@ with tab3:
         e fortaleçam a tomada de decisão baseada em evidências.  
         📧 **Contacto**: *gineliohermilio@gmail.com*
         """)
+
 
 
