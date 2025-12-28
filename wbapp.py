@@ -27,68 +27,11 @@ def get_countries():
 
 # ------------------ Sidebar ------------------
 st.sidebar.subheader('Moçambique')
-st.subheader('Moçambique')
-st.image(
+
+st.sidebar.image(
     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Flag_of_Mozambique.svg/320px-Flag_of_Mozambique.svg.png",
     width=100)
-st.image(
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Flag_of_Mozambique.svg/320px-Flag_of_Mozambique.svg.png",
-    width=100)
-st.sidebar.header("Filtros")
-st.header("Filtros")
-with st.sidebar.expander('Como encontrar as variáveis'):
-    st.write("""Por exemplo: Como encontro e inflação? 
-    Comece escrevendo com letra maiúscula em inglês na barra de seleção de indicadores: **Inflation** ... e selecione o seu indicador.
-    Noutros casos como **PIB** deve ser GDP...
-    Caso ainda enfrente dificuldade pergunte ao **Chat**""")
-with st.expander('Como encontrar as variáveis'):
-    st.write("""Por exemplo: Como encontro e inflação? 
-    Comece escrevendo com letra maiúscula em inglês na barra de seleção de indicadores: **Inflation** ... e selecione o seu indicador.
-    Noutros casos como **PIB** deve ser GDP...
-    Caso ainda enfrente dificuldade pergunte ao **Chat**""")
-topic = get_topics()
-country = get_countries()
-ind = get_indicators(5)
 
-dic = {}
-for big in country:
-    dic[big['value']] = big['id']
-sel_country = st.sidebar.multiselect('Selecione o(s) País(es):',
-                                     options=sorted(dic.keys()), default='Mozambique')
-sel_country = st.multiselect('Selecione o(s) País(es):',
-                                     options=sorted(dic.keys()), default='Mozambique')
-
-
-if not sel_country:
-    st.stop()
-c_lis = []
-for c in sel_country:
-    c_lis.append(dic[c])
-
-dice = {}
-for big in ind:
-    dice[big['value']] = big['id']
-sel_ind = st.sidebar.multiselect('Selecione o(s) Indicador(es):',
-                                 options=sorted(dice.keys()), default="Agricultural land (sq. km)")
-sel_ind = st.multiselect('Selecione o(s) Indicador(es):',
-                                 options=sorted(dice.keys()), default="Agricultural land (sq. km)")
-if not sel_ind:
-    st.stop()
-i_lis = []
-for c in sel_ind:
-    i_lis.append(dice[c])
-
-years = list(range(1960, 2024))
-start_year, end_year = st.sidebar.select_slider(
-    "Selecione o intervalo de anos",
-    options=years,
-    value=(2000, 2020)
-)
-start_year, end_year = st.select_slider(
-    "Selecione o intervalo de anos",
-    options=years,
-    value=(2000, 2020)
-)
 
 
 df = wb.data.DataFrame(
@@ -128,6 +71,47 @@ tab1, tab2, tab3 = st.tabs(['🏦 Indicador', '🤖 Análise IA', 'ℹ️ Sobre 
 # 2. Garantir que o Ano seja numérico para o eixo X
 df_long['Ano'] = pd.to_numeric(df_long['Ano'])
 with tab1:
+    st.header("Filtros")
+with st.expander('Como encontrar as variáveis'):
+    st.write("""Por exemplo: Como encontro e inflação? 
+    Comece escrevendo com letra maiúscula em inglês na barra de seleção de indicadores: **Inflation** ... e selecione o seu indicador.
+    Noutros casos como **PIB** deve ser GDP...
+    Caso ainda enfrente dificuldade pergunte ao **Chat**""")
+topic = get_topics()
+country = get_countries()
+ind = get_indicators(5)
+
+dic = {}
+for big in country:
+    dic[big['value']] = big['id']
+sel_country = st.multiselect('Selecione o(s) País(es):',
+                                     options=sorted(dic.keys()), default='Mozambique')
+
+
+if not sel_country:
+    st.stop()
+c_lis = []
+for c in sel_country:
+    c_lis.append(dic[c])
+
+dice = {}
+for big in ind:
+    dice[big['value']] = big['id']
+sel_ind = st.multiselect('Selecione o(s) Indicador(es):',
+                                 options=sorted(dice.keys()), default="Agricultural land (sq. km)")
+if not sel_ind:
+    st.stop()
+i_lis = []
+for c in sel_ind:
+    i_lis.append(dice[c])
+
+years = list(range(1960, 2024))
+start_year, end_year = st.select_slider(
+    "Selecione o intervalo de anos",
+    options=years,
+    value=(2000, 2020)
+)
+
     # Supondo que 'sel_ind' são os indicadores selecionados e 'sel_pais' o país escolhido
     # Se você tiver mais de um país selecionado, o KPI mostrará apenas o primeiro
     for k, countr in enumerate(sel_country):
@@ -394,6 +378,7 @@ with tab3:
         e fortaleçam a tomada de decisão baseada em evidências.  
         📧 **Contacto**: *gineliohermilio@gmail.com*
         """)
+
 
 
 
